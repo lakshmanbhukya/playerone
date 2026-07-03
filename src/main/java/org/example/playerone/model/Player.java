@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import org.example.playerone.enums.PlayerRole;
 import org.example.playerone.enums.PlayerStatus;
 
@@ -31,8 +33,16 @@ public class Player {
     @Column(name="status", nullable = false)
     private PlayerStatus status;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
 
+    public Player(String gamerTag, String realName, PlayerRole primaryRole, PlayerStatus status) {
+        this.gamerTag = gamerTag;
+        this.setStatus(status);
+        this.realName = realName;
+        this.primayRole = primaryRole;
+    }
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +30,15 @@ public class Team {
     @Column(name ="coach_id")
     private Long coachId;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy="team",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Player> players = new ArrayList<>();
 
 
+    public Team(String teamName, String gameDivison, long coachId) {
+        this.gameDivision = gameDivison;
+        this.teamName = teamName;
+        this.coachId = coachId;
+    }
 }

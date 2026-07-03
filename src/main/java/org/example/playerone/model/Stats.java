@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
@@ -18,9 +20,11 @@ public class Stats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "palyer_id", nullable = false)
-    private Player palyer;
+    @JoinColumn(name = "player_id", nullable = false)
+    private Player player;
 
     @Column(name = "match_date", nullable = false)
     private LocalDate matchDate;
