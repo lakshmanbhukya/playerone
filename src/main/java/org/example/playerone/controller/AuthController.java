@@ -1,37 +1,41 @@
 package org.example.playerone.controller;
 
-import org.apache.catalina.User;
+import org.example.playerone.dto.ApiResponse;
 import org.example.playerone.dto.LoginRequest;
 import org.example.playerone.security.JwtProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user/auth")
 public class AuthController {
-    @Autowired
-    private JwtProvider jwtProvider;
+
+    private final JwtProvider jwtProvider;
+
+    public AuthController(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
+    }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
-        String  username = loginRequest.getUsername();
-        String token=jwtProvider.generateToken(username);
-        String getUsername=jwtProvider.getUsername(token);
-        return String.format("token: %s | getUsername: %s", token, getUsername);
+    public ApiResponse<String> login(@RequestBody LoginRequest loginRequest) {
+        String username = loginRequest.getUsername();
+        String token = jwtProvider.generateToken(username);
+        return ApiResponse.success(token, "Login successful");
     }
 
     @GetMapping("/data")
-    public String getData(@RequestHeader("Authorization") String authHeader){
+    public ApiResponse<String> getData(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ApiResponse.error("Invalid token format");
+        }
         String token = authHeader.substring(7);
-        try{
-            String username=jwtProvider.getUsername(token);
-            if(username!=null){
-                return String.format("token: %s | getUsername: %s", token, username);
+        try {
+            String username = jwtProvider.getUsername(token);
+            if (username != null) {
+                return ApiResponse.success(username, "Token validated successfully");
             }
         } catch (Exception e) {
-            e.getMessage();
+            return ApiResponse.error("Authentication failed: " + e.getMessage());
         }
-        return "unauthorized";
+        return ApiResponse.error("Unauthorized");
     }
-
 }
